@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saha Destek Asistanı</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 16px; background: #0f172a; color: #e2e8f0; }
+  h1 { font-size: 20px; }
+  #chat { border: 1px solid #334155; border-radius: 8px; padding: 16px; min-height: 300px; margin-bottom: 16px; background: #1e293b; }
+  .msg { margin-bottom: 12px; line-height: 1.5; }
+  .user { color: #38bdf8; font-weight: bold; }
+  .bot { color: #e2e8f0; }
+  .sources { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+  form { display: flex; gap: 8px; }
+  input { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; }
+  button { padding: 10px 16px; border-radius: 6px; border: none; background: #38bdf8; color: #0f172a; font-weight: bold; cursor: pointer; }
+  button:disabled { opacity: 0.5; }
+</style>
+</head>
+<body>
+  <h1>🛠️ Saha Destek Asistanı (Offline)</h1>
+  <div id="chat"></div>
+  <form id="form">
+    <input id="input" placeholder="Bir soru sor..." autocomplete="off" />
+    <button type="submit">Gönder</button>
+  </form>
+
+<script>
+  const chat = document.getElementById("chat");
+  const form = document.getElementById("form");
+  const input = document.getElementById("input");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const question = input.value.trim();
+    if (!question) return;
+
+    addMessage("user", question);
+    input.value = "";
+    input.disabled = true;
+
+    const loadingId = addMessage("bot", "⏳ Düşünüyor...");
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question }),
+      });
+      const data = await res.json();
+
+      const el = document.getElementById(loadingId);
+      if (data.error) {
+        el.innerText = "❌ " + data.error;
+      } else {
+        el.innerHTML = data.answer.replace(/\n/g, "<br>");
+        if (data.sources.length > 0) {
+          const src = document.createElement("div");
+          src.className = "sources";
+          src.innerText = "Kaynak: " + data.sources.map(s => s.title).join(", ");
+          el.appendChild(src);
+        }
+      }
+    } catch (err) {
+      document.getElementById(loadingId).innerText = "❌ Bağlantı hatası.";
+    }
+
+    input.disabled = false;
+    input.focus();
+  });
+
+  function addMessage(role, text) {
+    const id = "msg-" + Date.now() + Math.random();
+    const div = document.createElement("div");
+    div.className = "msg " + role;
+    div.id = id;
+    div.innerText = (role === "user" ? "Sen: " : "Asistan: ") + text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+    return id;
+  }
+</script>
+</body>
+</html>
