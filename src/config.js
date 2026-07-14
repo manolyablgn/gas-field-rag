@@ -3,7 +3,8 @@
 
 export const config = {
   // Foundry Local'de kullanılacak model (foundry model list çıktısındaki "Alias" sütunu)
-  model: "qwen2.5-1.5b",
+  model: "qwen2.5-1.5b",        // hızlı, cevap üretme (generation) için
+  rerankModel: "qwen2.5-7b",    // güçlü, alaka değerlendirme (reranking) için
 
   // Sunucu ayarları
   port: 3000,
@@ -16,11 +17,12 @@ export const config = {
 
   // Retrieval (getirme) ayarları
   retrieval: {
-    topK: 5,
+    topK: 3,
     minScoreThreshold: 0.1,
+    absoluteRelevanceThreshold: 6,  // 0-10 üzerinden, bunun altındaki adaylar elenir
     weights: {
       lexical: 1.0,
-      semantic: 1.3,   // semantic sinyale biraz öncelik ver
+      semantic: 1.3,
     },
   },
 

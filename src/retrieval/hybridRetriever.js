@@ -78,8 +78,20 @@ export async function hybridRetrieve(query, topK = config.retrieval.topK) {
 
   const topCandidates = results
     .sort((a, b) => b.rrfScore - a.rrfScore)
-    .slice(0, Math.min(topK + 2, results.length)); // biraz daha fazla aday al, sonra rerank ile daralt
+    .slice(0, Math.min(topK + 3, results.length)); // biraz daha fazla aday al, sonra rerank ile daralt
 
   const reranked = await rerank(query, topCandidates);
-  return reranked.slice(0, topK);
+
+  // Aynı dokümandan birden fazla chunk varsa, en iyi sıradaki tek chunk'ı tut
+  const seenDocs = new Set();
+  const deduped = [];
+  for (const chunk of reranked) {
+    if (!seenDocs.has(chunk.docId)) {
+      seenDocs.add(chunk.docId);
+      deduped.push(chunk);
+    }
+  }
+
+  // topK bir ÜST SINIR, model daha azını "alakalı" bulduysa daha az sonuç dönebilir
+  return deduped.slice(0, topK);
 }

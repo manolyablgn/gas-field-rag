@@ -1,13 +1,14 @@
 // src/generation/chatEngine.js
 // Retrieval + Generation akışını orkestre eder (RAG'ın kalbi)
 
-import { retrieve } from "../retrieval/tfidfRetriever.js";
+import { hybridRetrieve } from "../retrieval/hybridRetriever.js";
 import { getChatClient } from "./foundryClient.js";
 import { buildSystemPrompt, buildUserPrompt } from "./prompts.js";
 
 export async function askQuestion(question) {
   // 1. Retrieval: alakalı chunk'ları bul
-  const chunks = retrieve(question);
+  const chunks = await hybridRetrieve(question);
+  const topChunks = chunks.slice(0, 2); // cevap üretimi ve kaynak gösterimi için en fazla 2 kaynak kullan
   console.log(`🔍 ${chunks.length} alakalı parça bulundu.`);
 
   // 2. Prompt oluştur
@@ -25,6 +26,6 @@ export async function askQuestion(question) {
 
   return {
     answer,
-    sources: chunks.map((c) => ({ title: c.title, docId: c.docId, score: c.score })),
+    sources: topChunks.map((c) => ({ title: c.title, docId: c.docId, score: c.score })),
   };
 }

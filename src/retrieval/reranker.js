@@ -1,52 +1,64 @@
 // src/retrieval/reranker.js
-// LLM tabanlı listwise reranking: tüm adayları tek seferde modele gösterip
-// en alakalıdan en alakasıza doğru sıralamasını ister (pointwise puanlamadan daha güvenilir)
+// LLM'e tüm adayları BİR ARADA gösterip karşılaştırmalı, mutlak puan (0-10) verdirir.
+// Bu, izole puanlamadan (tutarsız) daha güvenilir, RRF skor eşiğinden (matematiksel
+// olarak anlamsız) daha doğru bir filtreleme sağlar.
 
-import { getChatClient } from "../generation/foundryClient.js";
+import { getRerankClient } from "../generation/foundryClient.js";
+import { config } from "../config.js";
 
 export async function rerank(query, candidates) {
-  if (candidates.length <= 1) return candidates;
+  if (candidates.length === 0) return [];
+  if (candidates.length === 1) return candidates;
 
-  const chatClient = await getChatClient();
+  const chatClient = await getRerankClient();
 
   const list = candidates
-    .map((c, i) => `[${i + 1}] ${c.text.slice(0, 200)}`)
+    .map((c, i) => `[${i + 1}] ${c.text.slice(0, 250)}`)
     .join("\n\n");
 
-  const prompt = `Aşağıda numaralandırılmış metin parçaları var. Soruyu yanıtlamak için EN ALAKALI olandan EN ALAKASIZ olana doğru sırala.
+  const prompt = `Aşağıda numaralandırılmış metin parçaları var. Her birini, soruyu ne kadar DOĞRUDAN yanıtladığına göre 0-10 arası puanla.
 
-ÖNEMLİ: Soru ve metinler farklı kelimeler kullanabilir ama aynı şeyi kastedebilir (örn. "valf" = "vana"). Kelime benzerliğine değil, KONUNUN gerçekten örtüşüp örtüşmediğine bak.
+ÖNEMLİ:
+- Soru ve metinler farklı kelimeler kullanabilir ama aynı şeyi kastedebilir (örn. "valf" = "vana"). Kelime benzerliğine değil, KONUNUN gerçekten örtüşüp örtüşmediğine bak.
+- Metinleri birbirleriyle KARŞILAŞTIRARAK puanla: en alakalı olana en yüksek puanı ver, konusu tamamen farklı olanlara düşük puan ver.
+- 8-10: Soruyu doğrudan yanıtlıyor
+- 4-7: Aynı genel alanda ama soruyu tam yanıtlamıyor
+- 0-3: Farklı bir konu/ekipman hakkında
 
 Soru: "${query}"
 
 Metinler:
 ${list}
 
-Sadece numaraları en alakalıdan en alakasıza doğru, virgülle ayrılmış şekilde yaz. Örnek format: 3,1,4,2
+Her metin için "numara:puan" formatında, virgülle ayrılmış şekilde yaz. Örnek: 1:8,2:2,3:6
 Başka hiçbir açıklama yazma.`;
 
-  const completion = await chatClient.completeChat([
-    { role: "user", content: prompt },
-  ]);
-
+  const completion = await chatClient.completeChat([{ role: "user", content: prompt }]);
   const raw = completion.choices[0]?.message?.content ?? "";
-  const orderMatches = raw.match(/\d+/g);
 
-  if (!orderMatches) {
-    // Model beklenen formatı vermezse, orijinal RRF sırasına geri dön
-    return candidates;
-  }
-
-  const order = orderMatches
-    .map((n) => parseInt(n, 10) - 1)
-    .filter((i) => i >= 0 && i < candidates.length);
-
-  // Modelin belirttiği sırayla diz, eksik kalanları sona ekle
-  const seen = new Set(order);
-  const reranked = order.map((i) => candidates[i]);
-  candidates.forEach((c, i) => {
-    if (!seen.has(i)) reranked.push(c);
+  const scoreMap = new Map();
+  const pairs = raw.match(/\d+\s*:\s*\d+/g) || [];
+  pairs.forEach((pair) => {
+    const [idxStr, scoreStr] = pair.split(":").map((s) => s.trim());
+    const idx = parseInt(idxStr, 10) - 1;
+    const score = parseInt(scoreStr, 10);
+    if (idx >= 0 && idx < candidates.length) {
+      scoreMap.set(idx, score);
+    }
   });
 
-  return reranked;
+  // Model beklenen formatı hiç vermediyse, orijinal sırayı koru (fallback)
+  if (scoreMap.size === 0) return candidates;
+
+  const scored = candidates.map((c, i) => ({
+    ...c,
+    llmScore: scoreMap.has(i) ? scoreMap.get(i) : 0,
+  }));
+
+  scored.sort((a, b) => b.llmScore - a.llmScore);
+
+  const threshold = config.retrieval.absoluteRelevanceThreshold;
+  const filtered = scored.filter((c, i) => i === 0 || c.llmScore >= threshold);
+
+  return filtered;
 }
