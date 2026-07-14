@@ -1,0 +1,52 @@
+[
+  {
+    "question": "basınç 80 bar üzerine çıkarsa ne yapmalıyım",
+    "expectedDocId": "KB-001",
+    "mustContainAny": ["tahliye", "80 bar"]
+  },
+  {
+    "question": "vana bakımı ne sıklıkla yapılmalı",
+    "expectedDocId": "KB-002",
+    "mustContainAny": ["ayda bir"]
+  },
+  {
+    "question": "valfler ne sıklıkla kontrol edilmeli",
+    "expectedDocId": "KB-002",
+    "mustContainAny": ["ayda bir"]
+  },
+  {
+    "question": "acil durumda hangi adımları izlemeliyim",
+    "expectedDocId": "KB-003",
+    "mustContainAny": ["ESD", "acil durdurma"]
+  },
+  {
+    "question": "gaz kaçağı olursa ne yapmalıyım",
+    "expectedDocId": "KB-003",
+    "mustContainAny": ["ESD", "acil durdurma", "ADDS"]
+  },
+  {
+    "question": "kompresör ne sıklıkla denetlenmeli",
+    "expectedDocId": "KB-004",
+    "mustContainAny": ["haftada bir"]
+  },
+  {
+    "question": "KKE ne demek",
+    "expectedDocId": "KB-001",
+    "mustContainAny": ["koruyucu ekipman"]
+  },
+  {
+    "question": "yangın alarmı çaldığında ne yapmalıyım",
+    "expectedDocId": "KB-003",
+    "mustContainAny": ["ESD", "acil durdurma"]
+  },
+  {
+    "question": "pizza tarifi nasıl yapılır",
+    "expectedDocId": null,
+    "mustContainAny": ["bilgi bulamadım"]
+  },
+  {
+    "question": "en yakın market nerede",
+    "expectedDocId": null,
+    "mustContainAny": ["bilgi bulamadım"]
+  }
+]

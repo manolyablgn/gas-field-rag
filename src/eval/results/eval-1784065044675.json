@@ -1,0 +1,115 @@
+[
+  {
+    "question": "basınç 80 bar üzerine çıkarsa ne yapmalıyım",
+    "expectedDocId": "KB-001",
+    "retrievedDocIds": [
+      "KB-001"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Basınç 80 bar üzerine çıkarsa saha personelinin derhal bölgeyi tahliye etmesi gerekiyor. Kişisel koruyucu ekipmanı (KKE) olmadan hatta yaklaşılmamalıdır."
+  },
+  {
+    "question": "vana bakımı ne sıklıkla yapılmalı",
+    "expectedDocId": "KB-002",
+    "retrievedDocIds": [
+      "KB-002"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Vana bakımı ayda bir kez yapılmalıdır."
+  },
+  {
+    "question": "valfler ne sıklıkla kontrol edilmeli",
+    "expectedDocId": "KB-002",
+    "retrievedDocIds": [
+      "KB-002"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Vana bakımı ayda bir kez yapılmalıdır. Kritik hatlardaki vanalar haftalık kontrol edilir."
+  },
+  {
+    "question": "acil durumda hangi adımları izlemeliyim",
+    "expectedDocId": "KB-003",
+    "retrievedDocIds": [
+      "KB-003",
+      "KB-001"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Acil durumda aşağıdaki adımları izlemeniz gerekmektedir:\n\n1. En yakın ESD butonunu bul.\n2. Butona basılı tut, sistem otomatik olarak tüm hatları kapatacaktır.\n3. Kontrol merkezini telsizle bilgilendir.\n4. Tahliye noktasına git."
+  },
+  {
+    "question": "gaz kaçağı olursa ne yapmalıyım",
+    "expectedDocId": "KB-003",
+    "retrievedDocIds": [
+      "KB-001",
+      "KB-003"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Gaz kaçağı olursa, yangın alarmı çaldığında veya ekipman arızası can güvenliğini tehdit ettiğinde, acil durdurma sisteminin (ADDS) butonuna basılmalıdır. Bu butonlar, yangın durumunda, yangın alarmı çaldığında veya ekipman arızası can güvenliğini tehdit ettiğinde, sistem otomatik olarak tüm hatları kapatacaktır. Ayrıca, kontrol merkezinize bilgilendirilmesi gereken durumlarda, bu durumlar, sistem otomatik olarak hatların kapama işlemi tamamlanmaya çalışacaktır."
+  },
+  {
+    "question": "kompresör ne sıklıkla denetlenmeli",
+    "expectedDocId": "KB-004",
+    "retrievedDocIds": [
+      "KB-004"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Kompresörler haftada bir kez denetlenebilir."
+  },
+  {
+    "question": "KKE ne demek",
+    "expectedDocId": "KB-001",
+    "retrievedDocIds": [
+      "KB-002"
+    ],
+    "retrievalCorrect": false,
+    "contentCorrect": false,
+    "passed": false,
+    "answer": "Bu konuda dokümanlarımda yeterli bilgi bulamadım."
+  },
+  {
+    "question": "yangın alarmı çaldığında ne yapmalıyım",
+    "expectedDocId": "KB-003",
+    "retrievedDocIds": [
+      "KB-003",
+      "KB-001"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Gaz kaçağı tespit edildiğinde, yangın alarmı çaldığında ya da ekipman arızası can güvenliğini tehdit ettiğinde ESD butonuna basılmalıdır."
+  },
+  {
+    "question": "pizza tarifi nasıl yapılır",
+    "expectedDocId": null,
+    "retrievedDocIds": [
+      "KB-002"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Pizza tarifi hakkında bilmediğiniz için bu konuda dokümanlarımda yeterli bilgi bulamadım."
+  },
+  {
+    "question": "en yakın market nerede",
+    "expectedDocId": null,
+    "retrievedDocIds": [
+      "KB-001"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Bu konuda dokümanlarımda yeterli bilgi bulamadım."
+  }
+]
