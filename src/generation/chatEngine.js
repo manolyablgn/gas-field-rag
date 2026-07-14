@@ -9,11 +9,11 @@ export async function askQuestion(question) {
   // 1. Retrieval: alakalı chunk'ları bul
   const chunks = await hybridRetrieve(question);
   const topChunks = chunks.slice(0, 2); // cevap üretimi ve kaynak gösterimi için en fazla 2 kaynak kullan
-  console.log(`🔍 ${chunks.length} alakalı parça bulundu.`);
+  console.log(`🔍 ${topChunks.length} alakalı parça bulundu.`);
 
-  // 2. Prompt oluştur
+  // 2. Prompt oluştur (sadece topChunks kullan, kırpma burada da uygulanmalı)
   const systemPrompt = buildSystemPrompt();
-  const userPrompt = buildUserPrompt(question, chunks);
+  const userPrompt = buildUserPrompt(question, topChunks);
 
   // 3. Model çağrısı
   const chatClient = await getChatClient();
@@ -26,6 +26,6 @@ export async function askQuestion(question) {
 
   return {
     answer,
-    sources: topChunks.map((c) => ({ title: c.title, docId: c.docId, score: c.score })),
+    sources: topChunks.map((c) => ({ title: c.title, docId: c.docId, score: c.rrfScore })),
   };
 }
