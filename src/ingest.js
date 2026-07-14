@@ -5,8 +5,9 @@ import { db } from "./db/sqlite.js";
 import { loadDocuments, splitIntoChunks } from "./ingestion/chunker.js";
 import { computeTfidf } from "./ingestion/tfidf.js";
 import { config } from "./config.js";
+import { embedTexts } from "./ingestion/embeddings.js";
 
-function ingest() {
+async function ingest() {
   console.log("📄 Dokümanlar okunuyor...");
   const documents = loadDocuments();
   console.log(`   ${documents.length} doküman bulundu.`);
@@ -31,6 +32,9 @@ function ingest() {
   const { vectors } = computeTfidf(chunkTexts);
 
   console.log("🧮 TF-IDF vektörleri hesaplandı.");
+  console.log("🧠 Embedding vektörleri hesaplanıyor (ilk seferde model indirilecek, biraz sürebilir)...");
+  const embeddings = await embedTexts(chunkTexts);
+  console.log("✅ Embedding vektörleri hazır.");
 
   // Dokümanları veritabanına yaz
   const insertDoc = db.prepare(
@@ -42,14 +46,15 @@ function ingest() {
 
   // Chunk'ları vektörleriyle birlikte veritabanına yaz
   const insertChunk = db.prepare(
-    "INSERT INTO chunks (doc_id, chunk_text, chunk_index, tfidf_vector) VALUES (?, ?, ?, ?)"
+    "INSERT INTO chunks (doc_id, chunk_text, chunk_index, tfidf_vector, embedding) VALUES (?, ?, ?, ?, ?)"
   );
   allChunks.forEach((chunk, i) => {
     insertChunk.run(
       chunk.docId,
       chunk.text,
       chunk.index,
-      JSON.stringify(vectors[i])
+      JSON.stringify(vectors[i]),
+      JSON.stringify(embeddings[i])
     );
   });
 
@@ -57,4 +62,4 @@ function ingest() {
   console.log(`   ${documents.length} doküman, ${allChunks.length} chunk veritabanına yazıldı.`);
 }
 
-ingest();
+await ingest();

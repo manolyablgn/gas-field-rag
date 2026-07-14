@@ -33,6 +33,7 @@ db.exec(`
     chunk_text TEXT NOT NULL,
     chunk_index INTEGER NOT NULL,
     tfidf_vector TEXT,
+    embedding TEXT,
     FOREIGN KEY (doc_id) REFERENCES documents(id)
   );
 

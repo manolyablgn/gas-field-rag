@@ -16,8 +16,12 @@ export const config = {
 
   // Retrieval (getirme) ayarları
   retrieval: {
-    topK: 5,                 // kaç parça getirilecek
-    minScoreThreshold: 0.1,  // bu skorun altındaki sonuçlar "alakasız" sayılır
+    topK: 5,
+    minScoreThreshold: 0.1,
+    weights: {
+      lexical: 1.0,
+      semantic: 1.3,   // semantic sinyale biraz öncelik ver
+    },
   },
 
   // Veritabanı dosya yolu
