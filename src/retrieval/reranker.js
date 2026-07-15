@@ -35,6 +35,7 @@ Başka hiçbir açıklama yazma.`;
 
   const completion = await chatClient.completeChat([{ role: "user", content: prompt }]);
   const raw = completion.choices[0]?.message?.content ?? "";
+  console.log("🔎 Reranker ham çıktı:", JSON.stringify(raw));
 
   const scoreMap = new Map();
   const pairs = raw.match(/\d+\s*:\s*\d+/g) || [];

@@ -67,6 +67,9 @@ export async function hybridRetrieve(query, topK = config.retrieval.topK) {
   });
 
   // --- 4. Sonuçları birleştir ve sırala ---
+  const lexicalByIndex = new Map(lexicalScored.map((item) => [item.index, item.score]));
+  const semanticByIndex = new Map(semanticScored.map((item) => [item.index, item.score]));
+
   const results = rows.map((row, i) => ({
     chunkId: row.id,
     docId: row.doc_id,
@@ -74,6 +77,8 @@ export async function hybridRetrieve(query, topK = config.retrieval.topK) {
     category: row.category,
     text: row.chunk_text,
     rrfScore: rrfScores.get(i) || 0,
+    rawLexicalScore: lexicalByIndex.get(i) || 0,
+    rawSemanticScore: semanticByIndex.get(i) || 0,
   }));
 
   const topCandidates = results
