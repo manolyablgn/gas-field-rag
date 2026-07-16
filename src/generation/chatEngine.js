@@ -2,31 +2,37 @@
 import { hybridRetrieve } from "../retrieval/hybridRetriever.js";
 import { getChatClient } from "./foundryClient.js";
 import { buildSystemPrompt, buildUserPrompt } from "./prompts.js";
+import { config } from "../config.js";
+import { ValidationError, RetrievalError } from "../utils/errors.js";
 
 const NO_INFO_MESSAGE = "Bu konuda dokümanlarımda yeterli bilgi bulamadım.";
 
 export async function askQuestion(question) {
-  const chunks = await hybridRetrieve(question);
-  const topChunks = chunks.slice(0, 2);
-
-  console.log(`🔍 ${topChunks.length} alakalı parça bulundu.`);
-  if (topChunks.length > 0) {
-    console.log(`   En iyi skor (llmScore): ${topChunks[0].llmScore}`);
+  if (typeof question !== "string" || question.trim().length === 0) {
+    throw new ValidationError("Soru boş olamaz.");
   }
+
+  let chunks;
+  try {
+    chunks = await hybridRetrieve(question);
+  } catch (err) {
+    throw new RetrievalError(err);
+  }
+
+  const topChunks = chunks.slice(0, 2);
+  console.log(`🔍 ${topChunks.length} alakalı parça bulundu.`);
 
   const bestScore = topChunks[0]?.llmScore;
   const bestLexical = topChunks[0]?.rawLexicalScore ?? 0;
   const bestSemantic = topChunks[0]?.rawSemanticScore ?? 0;
+  const { minLexicalScore, minSemanticScore } = config.retrieval.groundingThresholds;
+
   console.log(`   Ham lexical: ${bestLexical} | Ham semantic: ${bestSemantic}`);
 
-  // Çift güvenlik ağı: LLM puanına tek başına güvenmiyoruz (halüsinasyon görebiliyor).
-  // Ham lexical VEYA ham semantic skorundan en az biri belirli bir eşiği geçmeli;
-  // ikisi de düşükse konu gerçekten alakasızdır (RRF skoru küçük veri setinde
-  // ayrım gücü zayıf olduğu için kullanılmıyor).
   const hasNoRelevantContext =
     topChunks.length === 0 ||
     bestScore === undefined ||
-    (bestLexical < 0.03 && bestSemantic < 0.5);
+    (bestLexical < minLexicalScore && bestSemantic < minSemanticScore);
 
   if (hasNoRelevantContext) {
     return { answer: NO_INFO_MESSAGE, sources: [] };
@@ -35,7 +41,7 @@ export async function askQuestion(question) {
   const systemPrompt = buildSystemPrompt();
   const userPrompt = buildUserPrompt(question, topChunks);
 
-  const chatClient = await getChatClient();
+  const chatClient = await getChatClient(); // ModelLoadError zaten buradan fırlar
   const completion = await chatClient.completeChat([
     { role: "system", content: systemPrompt },
     { role: "user", content: userPrompt },
