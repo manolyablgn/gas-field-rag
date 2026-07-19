@@ -7,7 +7,8 @@ import { ValidationError, RetrievalError } from "../utils/errors.js";
 
 const NO_INFO_MESSAGE = "Bu konuda dokümanlarımda yeterli bilgi bulamadım.";
 
-export async function askQuestion(question) {
+// Retrieval + grounding guard mantığını iki fonksiyon (streaming/non-streaming) paylaşır
+async function prepareContext(question) {
   if (typeof question !== "string" || question.trim().length === 0) {
     throw new ValidationError("Soru boş olamaz.");
   }
@@ -34,6 +35,13 @@ export async function askQuestion(question) {
     bestScore === undefined ||
     (bestLexical < minLexicalScore && bestSemantic < minSemanticScore);
 
+  return { topChunks, hasNoRelevantContext };
+}
+
+// Eski, tek seferde tam cevap dönen versiyon (geriye dönük uyumluluk için, eval script'i bunu kullanıyor)
+export async function askQuestion(question) {
+  const { topChunks, hasNoRelevantContext } = await prepareContext(question);
+
   if (hasNoRelevantContext) {
     return { answer: NO_INFO_MESSAGE, sources: [] };
   }
@@ -41,7 +49,7 @@ export async function askQuestion(question) {
   const systemPrompt = buildSystemPrompt();
   const userPrompt = buildUserPrompt(question, topChunks);
 
-  const chatClient = await getChatClient(); // ModelLoadError zaten buradan fırlar
+  const chatClient = await getChatClient();
   const completion = await chatClient.completeChat([
     { role: "system", content: systemPrompt },
     { role: "user", content: userPrompt },
@@ -51,6 +59,33 @@ export async function askQuestion(question) {
 
   return {
     answer,
+    sources: topChunks.map((c) => ({ title: c.title, docId: c.docId, score: c.rrfScore })),
+  };
+}
+
+// Yeni, streaming versiyon: her token geldiğinde onCallback'i çağırır
+export async function askQuestionStreaming(question, onToken) {
+  const { topChunks, hasNoRelevantContext } = await prepareContext(question);
+
+  if (hasNoRelevantContext) {
+    onToken(NO_INFO_MESSAGE);
+    return { sources: [] };
+  }
+
+  const systemPrompt = buildSystemPrompt();
+  const userPrompt = buildUserPrompt(question, topChunks);
+
+  const chatClient = await getChatClient();
+
+  for await (const chunk of chatClient.completeStreamingChat([
+    { role: "system", content: systemPrompt },
+    { role: "user", content: userPrompt },
+  ])) {
+    const token = chunk.choices?.[0]?.delta?.content;
+    if (token) onToken(token);
+  }
+
+  return {
     sources: topChunks.map((c) => ({ title: c.title, docId: c.docId, score: c.rrfScore })),
   };
 }

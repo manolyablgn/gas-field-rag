@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
-import { askQuestion } from "./generation/chatEngine.js";
+import { askQuestion, askQuestionStreaming } from "./generation/chatEngine.js";
 import { config } from "./config.js";
 import { db } from "./db/sqlite.js";
 import { AppError } from "./utils/errors.js";
@@ -46,6 +46,31 @@ app.post("/api/chat", async (req, res) => {
     console.error("❌ Beklenmeyen hata:", err);
     res.status(500).json({ error: "Bir hata oluştu, tekrar deneyin." });
   }
+});
+
+app.post("/api/chat/stream", async (req, res) => {
+  const { question } = req.body;
+
+  if (typeof question !== "string" || question.trim().length === 0) {
+    return res.status(400).json({ error: "Geçerli bir 'question' alanı gerekli." });
+  }
+
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.flushHeaders();
+
+  try {
+    const result = await askQuestionStreaming(question.trim(), (token) => {
+      res.write(`data: ${JSON.stringify({ token })}\n\n`);
+    });
+    res.write(`data: ${JSON.stringify({ done: true, sources: result.sources })}\n\n`);
+  } catch (err) {
+    console.error("❌ Streaming hatası:", err.message);
+    res.write(`data: ${JSON.stringify({ error: "Bir hata oluştu, tekrar deneyin." })}\n\n`);
+  }
+
+  res.end();
 });
 
 const upload = multer({

@@ -21,11 +21,13 @@
 </head>
 <body>
   <h1>🛠️ Saha Destek Asistanı (Offline)</h1>
+
   <div id="uploadBox" style="margin-bottom: 16px; padding: 12px; border: 1px dashed #334155; border-radius: 8px;">
-  <input type="file" id="fileInput" accept=".md,.pdf" style="color: #e2e8f0;" />
-  <button id="uploadBtn" style="padding: 6px 12px; border-radius: 6px; border: none; background: #38bdf8; color: #0f172a; font-weight: bold; cursor: pointer;">Yükle ve İndeksle</button>
-  <div id="uploadStatus" style="margin-top: 8px; font-size: 13px; color: #94a3b8;"></div>
-</div>
+    <input type="file" id="fileInput" accept=".md,.pdf" style="color: #e2e8f0;" />
+    <button id="uploadBtn" style="padding: 6px 12px; border-radius: 6px; border: none; background: #38bdf8; color: #0f172a; font-weight: bold; cursor: pointer;">Yükle ve İndeksle</button>
+    <div id="uploadStatus" style="margin-top: 8px; font-size: 13px; color: #94a3b8;"></div>
+  </div>
+
   <div id="chat"></div>
   <form id="form">
     <input id="input" placeholder="Bir soru sor..." autocomplete="off" />
@@ -35,6 +37,7 @@
 <script>
   const chat = document.getElementById("chat");
   const form = document.getElementById("form");
+  const input = document.getElementById("input");
   const fileInput = document.getElementById("fileInput");
   const uploadBtn = document.getElementById("uploadBtn");
   const uploadStatus = document.getElementById("uploadStatus");
@@ -68,7 +71,6 @@
 
     uploadBtn.disabled = false;
   });
-  const input = document.getElementById("input");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -79,30 +81,51 @@
     input.value = "";
     input.disabled = true;
 
-    const loadingId = addMessage("bot", "⏳ Düşünüyor...");
+    const loadingId = addMessage("bot", "");
+    const el = document.getElementById(loadingId);
+    let fullText = "";
 
     try {
-      const res = await fetch("/api/chat", {
+      const res = await fetch("/api/chat/stream", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question }),
       });
-      const data = await res.json();
 
-      const el = document.getElementById(loadingId);
-      if (data.error) {
-        el.innerText = "❌ " + data.error;
-      } else {
-        el.innerHTML = data.answer.replace(/\n/g, "<br>");
-        if (data.sources.length > 0) {
-          const src = document.createElement("div");
-          src.className = "sources";
-          src.innerText = "Kaynak: " + data.sources.map(s => s.title).join(", ");
-          el.appendChild(src);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n\n");
+        buffer = lines.pop();
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const data = JSON.parse(line.slice(6));
+
+          if (data.token) {
+            fullText += data.token;
+            el.innerHTML = fullText.replace(/\n/g, "<br>");
+            chat.scrollTop = chat.scrollHeight;
+          } else if (data.done) {
+            if (data.sources && data.sources.length > 0) {
+              const src = document.createElement("div");
+              src.className = "sources";
+              src.innerText = "Kaynak: " + data.sources.map((s) => s.title).join(", ");
+              el.appendChild(src);
+            }
+          } else if (data.error) {
+            el.innerText = "❌ " + data.error;
+          }
         }
       }
     } catch (err) {
-      document.getElementById(loadingId).innerText = "❌ Bağlantı hatası.";
+      el.innerText = "❌ Bağlantı hatası.";
     }
 
     input.disabled = false;
