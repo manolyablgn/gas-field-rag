@@ -8,7 +8,7 @@ import { ConfigError } from "./utils/errors.js";
 
 export const config = {
   // Foundry Local'de kullanılacak modeller (foundry model list çıktısındaki "Alias" sütunu)
-  model: process.env.GENERATION_MODEL || "qwen2.5-1.5b",        // hızlı, cevap üretme (generation) için
+  model: process.env.GENERATION_MODEL || "qwen2.5-7b",        // hızlı, cevap üretme (generation) için
   rerankModel: process.env.RERANK_MODEL || "qwen2.5-7b",        // güçlü, alaka değerlendirme (reranking) için
 
   // Sunucu ayarları
@@ -33,7 +33,9 @@ export const config = {
     // "bilgi bulamadım" dönülür (uydurma riskini sıfırlar, hızlıdır)
     groundingThresholds: {
       minLexicalScore: 0.03,
-      minSemanticScore: 0.5,
+      minSemanticScore: 0.35, // eval verisine dayanarak kalibre edildi: off-topic sorular
+                               // max 0.223 semantic skor alırken, gerçek/paraphrase sorular
+                               // 0.25-0.48 arası çıkıyor - 0.35 güvenli bir ayrım noktası
     },
   },
 

@@ -3,7 +3,7 @@ import { fileURLToPath } from "url";
 import { db } from "./db/sqlite.js";
 import { loadDocuments, splitIntoChunks } from "./ingestion/chunker.js";
 import { computeTfidf } from "./ingestion/tfidf.js";
-import { embedTexts } from "./ingestion/embeddings.js";
+import { embedTextsSync } from "./ingestion/embedBatchSync.js";
 
 export async function ingestAll() {
   console.log("📄 Dokümanlar okunuyor...");
@@ -27,8 +27,8 @@ export async function ingestAll() {
   const { vectors } = computeTfidf(chunkTexts);
   console.log("🧮 TF-IDF vektörleri hesaplandı.");
 
-  console.log("🧠 Embedding vektörleri hesaplanıyor...");
-  const embeddings = await embedTexts(chunkTexts);
+  console.log("🧠 Embedding vektörleri hesaplanıyor (izole alt process'te)...");
+  const embeddings = embedTextsSync(chunkTexts);
   console.log("✅ Embedding vektörleri hazır.");
 
   const insertDoc = db.prepare(
@@ -57,7 +57,6 @@ export async function ingestAll() {
   return { documentCount: documents.length, chunkCount: allChunks.length };
 }
 
-// Terminalden doğrudan çalıştırıldığında otomatik tetikle (npm run ingest için)
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   ingestAll();
 }

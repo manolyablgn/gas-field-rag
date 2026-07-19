@@ -5,6 +5,31 @@
     "mustContainAny": ["tahliye", "80 bar"]
   },
   {
+    "question": "pipeline hattında basınç anomalisi olursa ne yapılır",
+    "expectedDocId": "KB-001",
+    "mustContainAny": ["tahliye", "80 bar", "durdurma"]
+  },
+  {
+    "question": "500 metre tahliye kuralı ne zaman uygulanır",
+    "expectedDocId": "KB-001",
+    "mustContainAny": ["500", "tahliye"]
+  },
+  {
+    "question": "KKE ne demek",
+    "expectedDocId": "KB-001",
+    "mustContainAny": ["koruyucu ekipman"]
+  },
+  {
+    "question": "kişisel koruyucu ekipman olmadan hatta yaklaşabilir miyim",
+    "expectedDocId": "KB-001",
+    "mustContainAny": ["hayır", "yaklaşılmamalı", "koruyucu"]
+  },
+  {
+    "question": "pipeline güvenlik standardı hangisi",
+    "expectedDocId": "KB-001",
+    "mustContainAny": ["ISO", "13623"]
+  },
+  {
     "question": "vana bakımı ne sıklıkla yapılmalı",
     "expectedDocId": "KB-002",
     "mustContainAny": ["ayda bir"]
@@ -15,6 +40,26 @@
     "mustContainAny": ["ayda bir"]
   },
   {
+    "question": "kritik hatlardaki vanalar ne kadar sık kontrol edilir",
+    "expectedDocId": "KB-002",
+    "mustContainAny": ["haftalık"]
+  },
+  {
+    "question": "vana sızıntısı nasıl kontrol edilir",
+    "expectedDocId": "KB-002",
+    "mustContainAny": ["sızıntı", "gövde"]
+  },
+  {
+    "question": "vana bakım kaydı nereye girilir",
+    "expectedDocId": "KB-002",
+    "mustContainAny": ["dijital", "kayıt"]
+  },
+  {
+    "question": "vana açma kapama hareketi sertse ne yapılır",
+    "expectedDocId": "KB-002",
+    "mustContainAny": ["yağla", "test"]
+  },
+  {
     "question": "acil durumda hangi adımları izlemeliyim",
     "expectedDocId": "KB-003",
     "mustContainAny": ["ESD", "acil durdurma"]
@@ -22,7 +67,27 @@
   {
     "question": "gaz kaçağı olursa ne yapmalıyım",
     "expectedDocId": "KB-003",
-    "mustContainAny": ["ESD", "acil durdurma", "ADDS"]
+    "mustContainAny": ["ESD", "acil durdurma"]
+  },
+  {
+    "question": "yangın alarmı çaldığında ne yapmalıyım",
+    "expectedDocId": "KB-003",
+    "mustContainAny": ["ESD", "acil durdurma"]
+  },
+  {
+    "question": "ESD butonuna ne zaman basılır",
+    "expectedDocId": "KB-003",
+    "mustContainAny": ["gaz kaçağı", "yangın", "arıza"]
+  },
+  {
+    "question": "acil durumda kontrol merkezi nasıl bilgilendirilir",
+    "expectedDocId": "KB-003",
+    "mustContainAny": ["telsiz"]
+  },
+  {
+    "question": "ekipman arızası can güvenliğini tehdit ederse ne yapılır",
+    "expectedDocId": "KB-003",
+    "mustContainAny": ["ESD", "acil durdurma"]
   },
   {
     "question": "kompresör ne sıklıkla denetlenmeli",
@@ -30,14 +95,24 @@
     "mustContainAny": ["haftada bir"]
   },
   {
-    "question": "KKE ne demek",
-    "expectedDocId": "KB-001",
-    "mustContainAny": ["koruyucu ekipman"]
+    "question": "kompresör bakımında yağ seviyesi kontrol edilir mi",
+    "expectedDocId": "KB-004",
+    "mustContainAny": ["yağ"]
   },
   {
-    "question": "yangın alarmı çaldığında ne yapmalıyım",
-    "expectedDocId": "KB-003",
-    "mustContainAny": ["ESD", "acil durdurma"]
+    "question": "kompresörde titreşim sensörleri kontrol edilir mi",
+    "expectedDocId": "KB-004",
+    "mustContainAny": ["titreşim"]
+  },
+  {
+    "question": "kompresör filtre temizliği ne zaman yapılır",
+    "expectedDocId": "KB-004",
+    "mustContainAny": ["filtre", "haftada bir"]
+  },
+  {
+    "question": "kompresörde anormal ses duyarsam ne yapmalıyım",
+    "expectedDocId": "KB-004",
+    "mustContainAny": ["anormal", "ısınma", "gözlemle"]
   },
   {
     "question": "pizza tarifi nasıl yapılır",
@@ -46,6 +121,26 @@
   },
   {
     "question": "en yakın market nerede",
+    "expectedDocId": null,
+    "mustContainAny": ["bilgi bulamadım"]
+  },
+  {
+    "question": "hava durumu nasıl",
+    "expectedDocId": null,
+    "mustContainAny": ["bilgi bulamadım"]
+  },
+  {
+    "question": "en iyi film önerisi nedir",
+    "expectedDocId": null,
+    "mustContainAny": ["bilgi bulamadım"]
+  },
+  {
+    "question": "İstanbul'dan Ankara'ya nasıl giderim",
+    "expectedDocId": null,
+    "mustContainAny": ["bilgi bulamadım"]
+  },
+  {
+    "question": "python ile nasıl web sitesi yapılır",
     "expectedDocId": null,
     "mustContainAny": ["bilgi bulamadım"]
   }

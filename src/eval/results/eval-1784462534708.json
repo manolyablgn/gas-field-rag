@@ -1,0 +1,320 @@
+[
+  {
+    "question": "basınç 80 bar üzerine çıkarsa ne yapmalıyım",
+    "expectedDocId": "KB-001",
+    "retrievedDocIds": [
+      "KB-001"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Basınç 80 bar üzerine çıkarsa saha personelinin derhal bölgeyi tahliye etmesi gerekiyor. Kişisel koruyucu ekipmanı (KKE) olmadan hatta yaklaşılamamalıdır."
+  },
+  {
+    "question": "pipeline hattında basınç anomalisi olursa ne yapılır",
+    "expectedDocId": "KB-001",
+    "retrievedDocIds": [
+      "KB-001"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Basınç 80 bar üzerinde çıkar ise saha personelinin derhal bölgeyi tahliye etmesi gereken ve KKE olmadan hatta yaklaşılamaz. Ancak bu durumda acil durdurma vasiyeti kapatılmalıdır. Ayrıca bölgeyi 500 metre yarıçaplı olarak tahliye etmeleri gerekmektedir. Son olarak yetkililerle iletişimi kurmalı."
+  },
+  {
+    "question": "basınç göstergesini ne zaman kontrol etmeliyim",
+    "expectedDocId": "KB-001",
+    "retrievedDocIds": [],
+    "retrievalCorrect": false,
+    "contentCorrect": false,
+    "passed": false,
+    "answer": "Bu konuda dokümanlarımda yeterli bilgi bulamadım."
+  },
+  {
+    "question": "500 metre tahliye kuralı ne zaman uygulanır",
+    "expectedDocId": "KB-001",
+    "retrievedDocIds": [
+      "KB-001"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "500 metre tahliye kuralı acil durdurma vanası kapatıldığında uygulanır."
+  },
+  {
+    "question": "KKE ne demek",
+    "expectedDocId": "KB-001",
+    "retrievedDocIds": [],
+    "retrievalCorrect": false,
+    "contentCorrect": false,
+    "passed": false,
+    "answer": "Bu konuda dokümanlarımda yeterli bilgi bulamadım."
+  },
+  {
+    "question": "kişisel koruyucu ekipman olmadan hatta yaklaşabilir miyim",
+    "expectedDocId": "KB-001",
+    "retrievedDocIds": [],
+    "retrievalCorrect": false,
+    "contentCorrect": false,
+    "passed": false,
+    "answer": "Bu konuda dokümanlarımda yeterli bilgi bulamadım."
+  },
+  {
+    "question": "pipeline güvenlik standardı hangisi",
+    "expectedDocId": "KB-001",
+    "retrievedDocIds": [
+      "KB-001",
+      "KB-002"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Bağlamanın belirttiği referansına göre,石油 및 자연 가스 산업 - 터빈의 전송 시스템은 Pipeline Security Standard'ı ile ilişkili değildir. Bağlama'nın belirttiği standartlar arasında ISO 13623 Petroleum and Natural Gas Industries - Pipeline Transportation Systems'ı bulunmaz. Bağlama'nın belirttiği standartların Pipeline Security Standard'ı ile ilişkili olabilmesi için daha detaylı bilgi gerektiriyor."
+  },
+  {
+    "question": "vana bakımı ne sıklıkla yapılmalı",
+    "expectedDocId": "KB-002",
+    "retrievedDocIds": [
+      "KB-002"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Vana bakımı ayda bir kez yapılmalıdır."
+  },
+  {
+    "question": "valfler ne sıklıkla kontrol edilmeli",
+    "expectedDocId": "KB-002",
+    "retrievedDocIds": [
+      "KB-002"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Vana bakımı ayda bir kez yapılmalıdır. Kritik hatlardaki vanalar haftalık kontrol edilir."
+  },
+  {
+    "question": "kritik hatlardaki vanalar ne kadar sık kontrol edilir",
+    "expectedDocId": "KB-002",
+    "retrievedDocIds": [
+      "KB-002"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Kritik hatlardaki vanalar haftalık kontrol edilir."
+  },
+  {
+    "question": "vana sızıntısı nasıl kontrol edilir",
+    "expectedDocId": "KB-002",
+    "retrievedDocIds": [
+      "KB-002",
+      "KB-001"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Vana sızıntısı kontrol edilirken, bu adımları takip ederek:\n\n1. **Gövdesi kontrol edin:** Sızıntılar gövdesinin kesinliğini kontrol eder.\n2. **Açma-kapama hareketini test edin:** Sertlik varsa, yağlıyorsa, bu hareketi kontrol edin.\n3. **Aktüatör bağlantılarını kontrol edin:** Aktüatör bağlantılarının kesinliğini kontrol edin.\n4. **Bakım kaydı dijital sisteme girin:** Bakım kaydı dijital sistemine girin.\n\nBu adımları gerçekleştirmeniz, vana sızıntısı kontrol edebilmek için gereklidir."
+  },
+  {
+    "question": "vana bakım kaydı nereye girilir",
+    "expectedDocId": "KB-002",
+    "retrievedDocIds": [
+      "KB-002"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Vana bakım kaydı dijital sisteme girilmelidir."
+  },
+  {
+    "question": "vana açma kapama hareketi sertse ne yapılır",
+    "expectedDocId": "KB-002",
+    "retrievedDocIds": [
+      "KB-002",
+      "KB-001"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Vana açma-kapama hareketi sert ise yağlar."
+  },
+  {
+    "question": "acil durumda hangi adımları izlemeliyim",
+    "expectedDocId": "KB-003",
+    "retrievedDocIds": [
+      "KB-003",
+      "KB-001"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Acil durumda aşağıdaki adımları izlemeniz gerekmektedir:\n\n1. En yakın ESD butonunu bul.\n2. Butona basılı tut, sistem otomatik olarak tüm hatları kapatacaktır.\n3. Kontrol merkezini telsizle bilgilendir.\n4. Tahliye noktasına git."
+  },
+  {
+    "question": "gaz kaçağı olursa ne yapmalıyım",
+    "expectedDocId": "KB-003",
+    "retrievedDocIds": [],
+    "retrievalCorrect": false,
+    "contentCorrect": false,
+    "passed": false,
+    "answer": "Bu konuda dokümanlarımda yeterli bilgi bulamadım."
+  },
+  {
+    "question": "yangın alarmı çaldığında ne yapmalıyım",
+    "expectedDocId": "KB-003",
+    "retrievedDocIds": [
+      "KB-003",
+      "KB-001"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Gaz kaçağı tespit edildiğinde, yangın alarmı çaldığında ya da ekipman arızası can güvenliğini tehdit ettiğinde ESD butonuna basılmalıdır."
+  },
+  {
+    "question": "ESD butonuna ne zaman basılır",
+    "expectedDocId": "KB-003",
+    "retrievedDocIds": [
+      "KB-003",
+      "KB-002"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Gaz kaçağı tespit edildiğinde, yangın alarmı çaldığında veya ekipman arızası can güvenliğini tehdit ettiğinde ESD butonuna basılmalıdır."
+  },
+  {
+    "question": "acil durumda kontrol merkezi nasıl bilgilendirilir",
+    "expectedDocId": "KB-003",
+    "retrievedDocIds": [],
+    "retrievalCorrect": false,
+    "contentCorrect": false,
+    "passed": false,
+    "answer": "Bu konuda dokümanlarımda yeterli bilgi bulamadım."
+  },
+  {
+    "question": "ekipman arızası can güvenliğini tehdit ederse ne yapılır",
+    "expectedDocId": "KB-003",
+    "retrievedDocIds": [
+      "KB-003",
+      "KB-001"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "ESD butonuna basılır."
+  },
+  {
+    "question": "kompresör ne sıklıkla denetlenmeli",
+    "expectedDocId": "KB-004",
+    "retrievedDocIds": [
+      "KB-004"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Kompresörler haftada bir kez denetlenebilir."
+  },
+  {
+    "question": "kompresör bakımında yağ seviyesi kontrol edilir mi",
+    "expectedDocId": "KB-004",
+    "retrievedDocIds": [
+      "KB-004",
+      "KB-002"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Görevliler tarafından belirlenen yağ seviyesi kontrol edilmez. Kompresör bakımında yağ seviyesi kontrol edilmez."
+  },
+  {
+    "question": "kompresörde titreşim sensörleri kontrol edilir mi",
+    "expectedDocId": "KB-004",
+    "retrievedDocIds": [
+      "KB-004"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": false,
+    "passed": false,
+    "answer": "Üzgünüm, bu konuda bilgi bulamadım."
+  },
+  {
+    "question": "kompresör filtre temizliği ne zaman yapılır",
+    "expectedDocId": "KB-004",
+    "retrievedDocIds": [
+      "KB-004"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Kompresör filtre temizliği rutin denetim sırasında yapılmaktadır. Bu işlem her hafta bir kez gerçekleştirilir."
+  },
+  {
+    "question": "kompresörde anormal ses duyarsam ne yapmalıyım",
+    "expectedDocId": "KB-004",
+    "retrievedDocIds": [],
+    "retrievalCorrect": false,
+    "contentCorrect": false,
+    "passed": false,
+    "answer": "Bu konuda dokümanlarımda yeterli bilgi bulamadım."
+  },
+  {
+    "question": "pizza tarifi nasıl yapılır",
+    "expectedDocId": null,
+    "retrievedDocIds": [],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Bu konuda dokümanlarımda yeterli bilgi bulamadım."
+  },
+  {
+    "question": "en yakın market nerede",
+    "expectedDocId": null,
+    "retrievedDocIds": [],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Bu konuda dokümanlarımda yeterli bilgi bulamadım."
+  },
+  {
+    "question": "hava durumu nasıl",
+    "expectedDocId": null,
+    "retrievedDocIds": [
+      "KB-003"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Bu konuda dokümanlarımda yeterli bilgi bulamadım."
+  },
+  {
+    "question": "en iyi film önerisi nedir",
+    "expectedDocId": null,
+    "retrievedDocIds": [],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Bu konuda dokümanlarımda yeterli bilgi bulamadım."
+  },
+  {
+    "question": "İstanbul'dan Ankara'ya nasıl giderim",
+    "expectedDocId": null,
+    "retrievedDocIds": [
+      "KB-003"
+    ],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Bu konuda dokümanlarımda yeterli bilgi bulamadım."
+  },
+  {
+    "question": "python ile nasıl web sitesi yapılır",
+    "expectedDocId": null,
+    "retrievedDocIds": [],
+    "retrievalCorrect": true,
+    "contentCorrect": true,
+    "passed": true,
+    "answer": "Bu konuda dokümanlarımda yeterli bilgi bulamadım."
+  }
+]
