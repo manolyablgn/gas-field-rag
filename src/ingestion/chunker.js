@@ -1,38 +1,70 @@
 // src/ingestion/chunker.js
-// Markdown dosyalarını okur, front-matter'ı ayırır, metni parçalara böler
-
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import { listSupportedFiles } from "./fileRouter.js";
+import { extractPdfText } from "./pdfLoader.js";
 import { config } from "../config.js";
 
-// Bir klasördeki tüm .md dosyalarını okur
-export function loadDocuments(docsPath = config.docsPath) {
-  const files = fs.readdirSync(docsPath).filter((f) => f.endsWith(".md"));
-
-  return files.map((filename) => {
-    const fullPath = path.join(docsPath, filename);
-    const raw = fs.readFileSync(fullPath, "utf-8");
-    const { data, content } = matter(raw); // data = front-matter, content = metin
-    const normalizedContent = content.replace(/\r\n/g, "\n").trim();
-
-    return {
-      id: data.id || filename.replace(".md", ""),
-      title: data.title || filename,
-      category: data.category || "Genel",
-      filename,
-      content: normalizedContent,
-    };
-  });
+function slugify(filename) {
+  const base = filename.replace(/\.[^/.]+$/, "");
+  return base
+    .toLowerCase()
+    .replace(/[^a-z0-9çğıöşü]+/g, "-")
+    .replace(/(^-|-$)/g, "");
 }
 
-// Metni chunk'lara böler (kelime bazlı, overlap'li, ilerlemesi garanti)
-export function splitIntoChunks(text, chunkSize = config.chunking.chunkSize, overlap = config.chunking.chunkOverlap) {
+function loadMarkdown(fullPath, filename) {
+  const raw = fs.readFileSync(fullPath, "utf-8");
+  const { data, content } = matter(raw);
+  const normalizedContent = content.replace(/\r\n/g, "\n").trim();
+
+  return {
+    id: data.id || slugify(filename),
+    title: data.title || filename,
+    category: data.category || "Genel",
+    filename,
+    content: normalizedContent,
+  };
+}
+
+async function loadPdf(fullPath, filename) {
+  const text = await extractPdfText(fullPath);
+  return {
+    id: slugify(filename),
+    title: filename.replace(/\.pdf$/i, ""),
+    category: "Genel",
+    filename,
+    content: text,
+  };
+}
+
+export async function loadDocuments(docsPath = config.docsPath) {
+  const files = listSupportedFiles(docsPath);
+  const documents = [];
+
+  for (const { filename, type } of files) {
+    const fullPath = path.join(docsPath, filename);
+    try {
+      if (type === "markdown") {
+        documents.push(loadMarkdown(fullPath, filename));
+      } else if (type === "pdf") {
+        documents.push(await loadPdf(fullPath, filename));
+      }
+    } catch (err) {
+      console.error(`⚠️  "${filename}" işlenemedi, atlanıyor: ${err.message}`);
+    }
+  }
+
+  return documents;
+}
+
+export function splitIntoChunks(text, chunkSize = 500, overlap = 100) {
   const words = text.split(/\s+/).filter(Boolean);
   if (words.length === 0) return [];
 
   const chunks = [];
-  const overlapWords = Math.max(1, Math.floor(overlap / 6)); // ~6 karakter/kelime varsayımı
+  const overlapWords = Math.max(1, Math.floor(overlap / 6));
   let i = 0;
 
   while (i < words.length) {
@@ -48,9 +80,8 @@ export function splitIntoChunks(text, chunkSize = config.chunking.chunkSize, ove
 
     chunks.push(chunkWords.join(" "));
 
-    if (j >= words.length) break; // metin bitti
+    if (j >= words.length) break;
 
-    // İlerlemeyi garanti et: overlap uygula ama asla geriye/yerinde sayma
     const nextStart = j - overlapWords;
     i = nextStart > i ? nextStart : j;
   }

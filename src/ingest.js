@@ -9,7 +9,7 @@ import { embedTexts } from "./ingestion/embeddings.js";
 
 async function ingest() {
   console.log("📄 Dokümanlar okunuyor...");
-  const documents = loadDocuments();
+  const documents = await loadDocuments();
   console.log(`   ${documents.length} doküman bulundu.`);
 
   // Önceki verileri temizle (yeniden ingestion yapılabilir olsun diye)
