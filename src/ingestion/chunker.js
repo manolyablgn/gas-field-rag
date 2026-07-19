@@ -5,6 +5,7 @@ import matter from "gray-matter";
 import { listSupportedFiles } from "./fileRouter.js";
 import { extractPdfText } from "./pdfLoader.js";
 import { config } from "../config.js";
+import { detectSuspiciousContent } from "./promptInjectionDetector.js";
 
 function slugify(filename) {
   const base = filename.replace(/\.[^/.]+$/, "");
@@ -18,6 +19,7 @@ function loadMarkdown(fullPath, filename) {
   const raw = fs.readFileSync(fullPath, "utf-8");
   const { data, content } = matter(raw);
   const normalizedContent = content.replace(/\r\n/g, "\n").trim();
+  detectSuspiciousContent(normalizedContent, filename);
 
   return {
     id: data.id || slugify(filename),
@@ -30,6 +32,7 @@ function loadMarkdown(fullPath, filename) {
 
 async function loadPdf(fullPath, filename) {
   const text = await extractPdfText(fullPath);
+  detectSuspiciousContent(text, filename);
   return {
     id: slugify(filename),
     title: filename.replace(/\.pdf$/i, ""),
