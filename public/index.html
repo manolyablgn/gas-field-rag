@@ -21,6 +21,11 @@
 </head>
 <body>
   <h1>🛠️ Saha Destek Asistanı (Offline)</h1>
+  <div id="uploadBox" style="margin-bottom: 16px; padding: 12px; border: 1px dashed #334155; border-radius: 8px;">
+  <input type="file" id="fileInput" accept=".md,.pdf" style="color: #e2e8f0;" />
+  <button id="uploadBtn" style="padding: 6px 12px; border-radius: 6px; border: none; background: #38bdf8; color: #0f172a; font-weight: bold; cursor: pointer;">Yükle ve İndeksle</button>
+  <div id="uploadStatus" style="margin-top: 8px; font-size: 13px; color: #94a3b8;"></div>
+</div>
   <div id="chat"></div>
   <form id="form">
     <input id="input" placeholder="Bir soru sor..." autocomplete="off" />
@@ -30,6 +35,39 @@
 <script>
   const chat = document.getElementById("chat");
   const form = document.getElementById("form");
+  const fileInput = document.getElementById("fileInput");
+  const uploadBtn = document.getElementById("uploadBtn");
+  const uploadStatus = document.getElementById("uploadStatus");
+
+  uploadBtn.addEventListener("click", async () => {
+    const file = fileInput.files[0];
+    if (!file) {
+      uploadStatus.innerText = "Önce bir dosya seç.";
+      return;
+    }
+
+    uploadBtn.disabled = true;
+    uploadStatus.innerText = "⏳ Yükleniyor ve yeniden indeksleniyor (biraz sürebilir)...";
+
+    const formData = new FormData();
+    formData.append("document", file);
+
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+
+      if (data.error) {
+        uploadStatus.innerText = "❌ " + data.error;
+      } else {
+        uploadStatus.innerText = `✅ "${data.filename}" eklendi. Toplam ${data.documentCount} doküman, ${data.chunkCount} chunk.`;
+        fileInput.value = "";
+      }
+    } catch (err) {
+      uploadStatus.innerText = "❌ Yükleme başarısız, bağlantıyı kontrol et.";
+    }
+
+    uploadBtn.disabled = false;
+  });
   const input = document.getElementById("input");
 
   form.addEventListener("submit", async (e) => {

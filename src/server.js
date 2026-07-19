@@ -7,6 +7,10 @@ import { askQuestion } from "./generation/chatEngine.js";
 import { config } from "./config.js";
 import { db } from "./db/sqlite.js";
 import { AppError } from "./utils/errors.js";
+import multer from "multer";
+import fs from "fs";
+import { validateUploadFilename, sanitizeUploadFilename } from "./ingestion/uploadValidation.js";
+import { ingestAll } from "./ingest.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -41,6 +45,42 @@ app.post("/api/chat", async (req, res) => {
     }
     console.error("❌ Beklenmeyen hata:", err);
     res.status(500).json({ error: "Bir hata oluştu, tekrar deneyin." });
+  }
+});
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
+});
+
+app.post("/api/upload", upload.single("document"), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "Dosya bulunamadı." });
+  }
+
+  const { originalname, buffer } = req.file;
+  const validation = validateUploadFilename(originalname);
+  if (!validation.valid) {
+    return res.status(400).json({ error: validation.errors.join(" ") });
+  }
+
+  const safeFilename = sanitizeUploadFilename(originalname);
+  const destPath = path.join(__dirname, "..", "docs", safeFilename);
+
+  try {
+    fs.writeFileSync(destPath, buffer);
+  } catch (err) {
+    console.error("❌ Dosya yazılamadı:", err.message);
+    return res.status(500).json({ error: "Dosya kaydedilemedi." });
+  }
+
+  try {
+    console.log(`📥 Yeni doküman yüklendi: ${safeFilename}, yeniden indeksleniyor...`);
+    const result = await ingestAll();
+    res.json({ success: true, filename: safeFilename, ...result });
+  } catch (err) {
+    console.error("❌ Yeniden indeksleme başarısız:", err.message);
+    res.status(500).json({ error: "Dosya kaydedildi ama yeniden indeksleme başarısız oldu, sunucuyu yeniden başlatmayı deneyin." });
   }
 });
 

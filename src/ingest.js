@@ -1,23 +1,19 @@
 // src/ingest.js
-// Ana ingestion script'i: docs/ klasöründeki dosyaları okuyup veritabanına indeksler
-
+import { fileURLToPath } from "url";
 import { db } from "./db/sqlite.js";
 import { loadDocuments, splitIntoChunks } from "./ingestion/chunker.js";
 import { computeTfidf } from "./ingestion/tfidf.js";
-import { config } from "./config.js";
 import { embedTexts } from "./ingestion/embeddings.js";
 
-async function ingest() {
+export async function ingestAll() {
   console.log("📄 Dokümanlar okunuyor...");
   const documents = await loadDocuments();
   console.log(`   ${documents.length} doküman bulundu.`);
 
-  // Önceki verileri temizle (yeniden ingestion yapılabilir olsun diye)
   db.exec("DELETE FROM chunks");
   db.exec("DELETE FROM documents");
 
-  // Tüm dokümanları chunk'lara böl
-  const allChunks = []; // { docId, text }
+  const allChunks = [];
   documents.forEach((doc) => {
     const chunks = splitIntoChunks(doc.content);
     chunks.forEach((chunkText, index) => {
@@ -27,16 +23,14 @@ async function ingest() {
 
   console.log(`✂️  ${allChunks.length} parçaya (chunk) bölündü.`);
 
-  // Tüm chunk metinleri üzerinden TF-IDF hesapla (vocabulary tüm chunk'lara göre kurulur)
   const chunkTexts = allChunks.map((c) => c.text);
   const { vectors } = computeTfidf(chunkTexts);
-
   console.log("🧮 TF-IDF vektörleri hesaplandı.");
-  console.log("🧠 Embedding vektörleri hesaplanıyor (ilk seferde model indirilecek, biraz sürebilir)...");
+
+  console.log("🧠 Embedding vektörleri hesaplanıyor...");
   const embeddings = await embedTexts(chunkTexts);
   console.log("✅ Embedding vektörleri hazır.");
 
-  // Dokümanları veritabanına yaz
   const insertDoc = db.prepare(
     "INSERT INTO documents (id, title, category, filename) VALUES (?, ?, ?, ?)"
   );
@@ -44,7 +38,6 @@ async function ingest() {
     insertDoc.run(doc.id, doc.title, doc.category, doc.filename);
   });
 
-  // Chunk'ları vektörleriyle birlikte veritabanına yaz
   const insertChunk = db.prepare(
     "INSERT INTO chunks (doc_id, chunk_text, chunk_index, tfidf_vector, embedding) VALUES (?, ?, ?, ?, ?)"
   );
@@ -60,6 +53,11 @@ async function ingest() {
 
   console.log("✅ Ingestion tamamlandı!");
   console.log(`   ${documents.length} doküman, ${allChunks.length} chunk veritabanına yazıldı.`);
+
+  return { documentCount: documents.length, chunkCount: allChunks.length };
 }
 
-await ingest();
+// Terminalden doğrudan çalıştırıldığında otomatik tetikle (npm run ingest için)
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  ingestAll();
+}
