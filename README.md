@@ -104,9 +104,15 @@ test/                        # 40+ otomatik test
 
 ## Bilinen Sınırlar
 
+Sistem, 30 soruluk bir golden test setinde **%86.2 doğruluk** (retrieval %89.7, içerik %86.2) elde etmiştir. Kalan sınırlar şunlardır:
+
 - **Çok kısa sorgular** (1-3 kelime, örn. "KKE ne demek") retrieval kalitesinde düşüş yaşayabilir — TF-IDF ve embedding'in yeterli bağlam yakalayamaması nedeniyle. İdeal kullanım tam cümle sorularla.
+- **Soru/emir kipi uyumsuzluğu**: Doküman bir kuralı emir kipinde yazıyorsa ("X yapılmamalıdır"), aynı kuralı soru kipinde soran paraphrase'ler ("X yapılabilir mi?") bazen yanlış chunk'ı öne çıkarabilir.
+- **Belirsiz alt-sorular**: Dokümanın genel bir kuralı olup, o kuralın bir alt-parçasına özel soru sorulduğunda (örn. "filtre temizliği ne sıklıkla" — doküman sadece genel denetim sıklığı veriyor), sistem bazen dürüstçe "bilgi bulamadım" der.
 - **Tek kullanıcılı, yerel kullanım için tasarlandı** — çoklu eşzamanlı kullanıcı/production ölçekleme için ek altyapı (queue, rate limiting) gerekir.
 - Windows 11 + Node 22.23.1 LTS üzerinde geliştirildi ve test edildi.
+
+Detaylı eval sonuçları `src/eval/results/` altında saklanır.
 
 ## Teşekkür
 
