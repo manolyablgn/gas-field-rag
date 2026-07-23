@@ -14,6 +14,8 @@ Foundry Local ile tamamen **çevrimdışı** (internet gerektirmeden) çalışan
 - 📤 **Canlı doküman yükleme** — tarayıcıdan dosya yükle, sistem otomatik yeniden indekslenir
 - ✅ **40+ otomatik test** — saf mantık katmanı (chunking, TF-IDF, RRF, güvenlik doğrulaması) için, her `git push`'ta CI ile otomatik çalışır
 - 📊 **Ölçülebilir kalite** — golden test seti ile retrieval ve içerik doğruluğu somut yüzdelerle ölçülür
+- ⚡ **Gerçek zamanlı streaming** — cevaplar SSE ile kelime kelime akar
+- 🛡️ **Prompt injection tespiti** — yüklenen dokümanlarda şüpheli talimat kalıpları deterministik olarak taranır ve loglanır
 
 ## Mimari
 

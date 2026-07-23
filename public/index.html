@@ -5,34 +5,127 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Saha Destek Asistanı</title>
 <style>
-  body { font-family: system-ui, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 16px; background: #0f172a; color: #e2e8f0; }
-  h1 { font-size: 20px; }
-  #chat { border: 1px solid #334155; border-radius: 8px; padding: 16px; min-height: 300px; margin-bottom: 16px; background: #1e293b; }
-  .msg { margin-bottom: 12px; line-height: 1.5; }
-  .user { color: #38bdf8; font-weight: bold; }
-  .bot { color: #e2e8f0; }
-  .sources { font-size: 12px; color: #94a3b8; margin-top: 8px; padding-top: 8px; border-top: 1px solid #334155; }
-  .sources::before { content: "📎 "; }
+  :root {
+    --bg: #10141b;
+    --panel: #171d26;
+    --panel-raised: #1d2530;
+    --border: #2a323d;
+    --border-strong: #3a4552;
+    --text: #e7eaee;
+    --text-muted: #8a96a6;
+    --text-dim: #5b6572;
+    --accent: #f0a93b;
+    --ok: #48b37d;
+    --warn: #d9695f;
+    --font-display: "Bahnschrift", "Arial Narrow", sans-serif;
+    --font-body: "Segoe UI", system-ui, sans-serif;
+    --font-mono: "Consolas", "SF Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 24px 16px 40px;
+    background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-attachment: fixed;
+  }
+  .shell { max-width: 720px; margin: 0 auto; }
+  header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px;
+    background: var(--panel-raised);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    margin-bottom: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  }
+  .led { width: 11px; height: 11px; border-radius: 50%; background: var(--text-dim); box-shadow: 0 0 0 3px rgba(240,169,59,0); transition: background .25s, box-shadow .25s; flex-shrink: 0; }
+  .led.busy { background: var(--accent); box-shadow: 0 0 0 3px rgba(240,169,59,.18); animation: pulse 1.1s ease-in-out infinite; }
+  .led.ok { background: var(--ok); box-shadow: 0 0 0 3px rgba(72,179,125,.18); }
+  .led.warn { background: var(--warn); box-shadow: 0 0 0 3px rgba(217,105,95,.18); }
+  @media (prefers-reduced-motion: reduce) { .led.busy, .dots span { animation: none !important; } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+  header h1 { font-family: var(--font-display); font-size: 17px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; margin: 0; }
+  header .tag { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+  header .status-label { margin-left: auto; font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+  .upload-tray { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--panel); border: 1px dashed var(--border-strong); border-radius: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+  .upload-tray .eyebrow { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); letter-spacing: .08em; text-transform: uppercase; width: 100%; }
+  input[type="file"] { color: var(--text-muted); font-family: var(--font-mono); font-size: 12px; max-width: 220px; }
+  #uploadStatus { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-muted); width: 100%; }
+  #chat { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; min-height: 320px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 2px; box-shadow: inset 0 2px 12px rgba(0,0,0,.2); }
+  .empty-state { text-align: center; padding: 36px 12px; color: var(--text-dim); }
+  .empty-state .big { font-family: var(--font-display); font-size: 15px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 14px; }
+  .suggestions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .suggestion-chip { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); border: 1px solid var(--border-strong); background: var(--panel-raised); padding: 7px 12px; border-radius: 20px; cursor: pointer; transition: border-color .15s, color .15s; }
+  .suggestion-chip:hover { border-color: var(--accent); color: var(--text); }
+  .entry { display: flex; gap: 10px; padding: 10px 12px; margin: 6px 0; animation: fadeIn .25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+  .avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+  .entry.user .avatar { background: var(--border-strong); color: var(--text-muted); }
+  .entry.bot .avatar { background: var(--accent); color: #1a1305; }
+  .entry.bot.grounded .avatar { background: var(--ok); color: #06210f; }
+  .entry.bot.no-info .avatar { background: var(--warn); color: #2b0906; }
+  .entry-body { flex: 1; border-left: 2px solid var(--border-strong); padding-left: 12px; }
+  .entry.bot .entry-body { border-left-color: var(--accent); }
+  .entry.bot.grounded .entry-body { border-left-color: var(--ok); }
+  .entry.bot.no-info .entry-body { border-left-color: var(--warn); }
+  .role { font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; display: block; margin-bottom: 4px; color: var(--text-dim); }
+  .body-text { font-size: 14.5px; line-height: 1.55; }
+  .cursor { display: inline-block; width: 7px; height: 15px; background: var(--accent); margin-left: 2px; vertical-align: text-bottom; animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .dots { display: inline-flex; gap: 4px; padding: 2px 0; }
+  .dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: bounce 1.2s ease-in-out infinite; }
+  .dots span:nth-child(2) { animation-delay: .15s; }
+  .dots span:nth-child(3) { animation-delay: .3s; }
+  @keyframes bounce { 0%,60%,100% { transform: translateY(0); opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }
+  .sources { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .source-chip { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-muted); border: 1px solid var(--border-strong); background: var(--panel-raised); padding: 3px 8px; border-radius: 3px; }
+  .source-chip::before { content: "⟶ "; color: var(--text-dim); }
   form { display: flex; gap: 8px; }
-  input { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; }
-  button { padding: 10px 16px; border-radius: 6px; border: none; background: #38bdf8; color: #0f172a; font-weight: bold; cursor: pointer; }
-  button:disabled { opacity: 0.5; }
+  input#input { flex: 1; padding: 12px 14px; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--panel-raised); color: var(--text); font-family: var(--font-body); font-size: 14px; transition: border-color .15s; }
+  input#input:focus, input[type="file"]:focus, button:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  button { padding: 12px 20px; border-radius: 6px; border: 1px solid var(--accent); background: var(--accent); color: #1a1305; font-family: var(--font-display); font-weight: 600; letter-spacing: .03em; text-transform: uppercase; font-size: 12.5px; cursor: pointer; transition: filter .15s, transform .1s; }
+  button:hover:not(:disabled) { filter: brightness(1.08); }
+  button:active:not(:disabled) { transform: scale(.97); }
+  button:disabled { opacity: .4; cursor: default; }
+  #uploadBtn { padding: 6px 14px; font-size: 11px; }
+  @media (max-width: 480px) { body { padding: 14px 10px 28px; } header h1 { font-size: 15px; } .status-label { display: none; } }
 </style>
 </head>
 <body>
-  <h1>🛠️ Saha Destek Asistanı (Offline)</h1>
+<div class="shell">
+  <header>
+    <span class="led" id="statusLed"></span>
+    <div><h1>Saha Destek Asistanı</h1><div class="tag">FOUNDRY LOCAL // ÇEVRİMDIŞI ÇALIŞMA MODU</div></div>
+    <span class="status-label" id="statusLabel">HAZIR</span>
+  </header>
 
-  <div id="uploadBox" style="margin-bottom: 16px; padding: 12px; border: 1px dashed #334155; border-radius: 8px;">
-    <input type="file" id="fileInput" accept=".md,.pdf" style="color: #e2e8f0;" />
-    <button id="uploadBtn" style="padding: 6px 12px; border-radius: 6px; border: none; background: #38bdf8; color: #0f172a; font-weight: bold; cursor: pointer;">Yükle ve İndeksle</button>
-    <div id="uploadStatus" style="margin-top: 8px; font-size: 13px; color: #94a3b8;"></div>
+  <div class="upload-tray">
+    <span class="eyebrow">Doküman Ekle (.md / .pdf)</span>
+    <input type="file" id="fileInput" accept=".md,.pdf" />
+    <button id="uploadBtn" type="button">Yükle ve İndeksle</button>
+    <div id="uploadStatus"></div>
   </div>
 
-  <div id="chat"></div>
+  <div id="chat">
+    <div class="empty-state" id="emptyState">
+      <div class="big">Bir soru sorarak başla</div>
+      <div class="suggestions">
+        <span class="suggestion-chip">Vana bakımı ne sıklıkla yapılmalı?</span>
+        <span class="suggestion-chip">Acil durumda hangi adımları izlemeliyim?</span>
+        <span class="suggestion-chip">Basınç 80 bar üzerine çıkarsa ne yapmalıyım?</span>
+      </div>
+    </div>
+  </div>
+
   <form id="form">
-    <input id="input" placeholder="Bir soru sor..." autocomplete="off" />
+    <input id="input" placeholder="Bir soru sor…" autocomplete="off" />
     <button type="submit">Gönder</button>
   </form>
+</div>
 
 <script>
   const chat = document.getElementById("chat");
@@ -41,34 +134,33 @@
   const fileInput = document.getElementById("fileInput");
   const uploadBtn = document.getElementById("uploadBtn");
   const uploadStatus = document.getElementById("uploadStatus");
+  const led = document.getElementById("statusLed");
+  const statusLabel = document.getElementById("statusLabel");
+  const emptyState = document.getElementById("emptyState");
+
+  document.querySelectorAll(".suggestion-chip").forEach((chip) => {
+    chip.addEventListener("click", () => { input.value = chip.textContent; form.requestSubmit(); });
+  });
+
+  function setStatus(state) {
+    led.className = "led" + (state ? " " + state : "");
+    const labels = { busy: "İŞLENİYOR", ok: "YANITLANDI", warn: "BULUNAMADI" };
+    statusLabel.textContent = labels[state] || "HAZIR";
+  }
 
   uploadBtn.addEventListener("click", async () => {
     const file = fileInput.files[0];
-    if (!file) {
-      uploadStatus.innerText = "Önce bir dosya seç.";
-      return;
-    }
-
+    if (!file) { uploadStatus.textContent = "Önce bir dosya seç."; return; }
     uploadBtn.disabled = true;
-    uploadStatus.innerText = "⏳ Yükleniyor ve yeniden indeksleniyor (biraz sürebilir)...";
-
+    uploadStatus.textContent = "⏳ Yükleniyor ve yeniden indeksleniyor…";
     const formData = new FormData();
     formData.append("document", file);
-
     try {
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       const data = await res.json();
-
-      if (data.error) {
-        uploadStatus.innerText = "❌ " + data.error;
-      } else {
-        uploadStatus.innerText = `✅ "${data.filename}" eklendi. Toplam ${data.documentCount} doküman, ${data.chunkCount} chunk.`;
-        fileInput.value = "";
-      }
-    } catch (err) {
-      uploadStatus.innerText = "❌ Yükleme başarısız, bağlantıyı kontrol et.";
-    }
-
+      if (data.error) uploadStatus.textContent = "✕ " + data.error;
+      else { uploadStatus.textContent = `✓ "${data.filename}" eklendi — ${data.documentCount} doküman, ${data.chunkCount} chunk.`; fileInput.value = ""; }
+    } catch { uploadStatus.textContent = "✕ Yükleme başarısız, bağlantıyı kontrol et."; }
     uploadBtn.disabled = false;
   });
 
@@ -76,14 +168,16 @@
     e.preventDefault();
     const question = input.value.trim();
     if (!question) return;
+    if (emptyState) emptyState.remove();
 
-    addMessage("user", question);
+    addEntry("user", question);
     input.value = "";
     input.disabled = true;
+    setStatus("busy");
 
-    const loadingId = addMessage("bot", "");
-    const el = document.getElementById(loadingId);
+    const { id, bodyEl } = addEntry("bot", "", true);
     let fullText = "";
+    let firstTokenReceived = false;
 
     try {
       const res = await fetch("/api/chat/stream", {
@@ -91,7 +185,6 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question }),
       });
-
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
@@ -99,7 +192,6 @@
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split("\n\n");
         buffer = lines.pop();
@@ -109,38 +201,66 @@
           const data = JSON.parse(line.slice(6));
 
           if (data.token) {
+            if (!firstTokenReceived) { firstTokenReceived = true; bodyEl.innerHTML = ""; }
             fullText += data.token;
-            el.innerHTML = fullText.replace(/\n/g, "<br>");
+            bodyEl.innerHTML = fullText.replace(/\n/g, "<br>") + '<span class="cursor"></span>';
             chat.scrollTop = chat.scrollHeight;
           } else if (data.done) {
-            if (data.sources && data.sources.length > 0) {
+            bodyEl.innerHTML = fullText.replace(/\n/g, "<br>");
+            const entryEl = document.getElementById(id);
+            const grounded = data.sources && data.sources.length > 0;
+            entryEl.classList.add(grounded ? "grounded" : "no-info");
+            setStatus(grounded ? "ok" : "warn");
+            if (grounded) {
               const src = document.createElement("div");
               src.className = "sources";
-              src.innerText = "Kaynak: " + data.sources.map((s) => s.title).join(", ");
-              el.appendChild(src);
+              data.sources.forEach((s) => { const chip = document.createElement("span"); chip.className = "source-chip"; chip.textContent = s.title; src.appendChild(chip); });
+              entryEl.querySelector(".entry-body").appendChild(src);
             }
           } else if (data.error) {
-            el.innerText = "❌ " + data.error;
+            bodyEl.textContent = "✕ " + data.error;
+            setStatus("warn");
           }
         }
       }
-    } catch (err) {
-      el.innerText = "❌ Bağlantı hatası.";
+    } catch {
+      bodyEl.textContent = "✕ Bağlantı hatası.";
+      setStatus("warn");
     }
 
     input.disabled = false;
     input.focus();
   });
 
-  function addMessage(role, text) {
-    const id = "msg-" + Date.now() + Math.random();
+  function addEntry(role, text, showDots) {
+    const id = "e-" + Date.now() + Math.floor(Math.random() * 1000);
     const div = document.createElement("div");
-    div.className = "msg " + role;
+    div.className = "entry " + role;
     div.id = id;
-    div.innerText = (role === "user" ? "Sen: " : "Asistan: ") + text;
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = role === "user" ? "SEN" : "AI";
+    div.appendChild(avatar);
+
+    const entryBody = document.createElement("div");
+    entryBody.className = "entry-body";
+
+    const roleLabel = document.createElement("span");
+    roleLabel.className = "role";
+    roleLabel.textContent = role === "user" ? "Sen" : "Asistan";
+    entryBody.appendChild(roleLabel);
+
+    const bodyEl = document.createElement("div");
+    bodyEl.className = "body-text";
+    if (showDots) bodyEl.innerHTML = '<span class="dots"><span></span><span></span><span></span></span>';
+    else bodyEl.textContent = text;
+    entryBody.appendChild(bodyEl);
+
+    div.appendChild(entryBody);
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
-    return id;
+    return { id, bodyEl };
   }
 </script>
 </body>
