@@ -5,7 +5,7 @@ import { buildSystemPrompt, buildUserPrompt } from "./prompts.js";
 import { config } from "../config.js";
 import { ValidationError, RetrievalError } from "../utils/errors.js";
 
-const NO_INFO_MESSAGE = "Bu konuda dokümanlarımda yeterli bilgi bulamadım.";
+const NO_INFO_MESSAGE = "I couldn't find enough information on this topic in my documents.";
 
 // Retrieval + grounding guard mantığını iki fonksiyon (streaming/non-streaming) paylaşır
 async function prepareContext(question) {

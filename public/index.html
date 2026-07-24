@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saha Destek Asistanı</title>
+<title>Lucid — Document Assistant</title>
 <style>
   :root {
     --bg: #10141b;
@@ -99,31 +99,31 @@
 <div class="shell">
   <header>
     <span class="led" id="statusLed"></span>
-    <div><h1>Saha Destek Asistanı</h1><div class="tag">FOUNDRY LOCAL // ÇEVRİMDIŞI ÇALIŞMA MODU</div></div>
+    <div><h1>Lucid</h1><div class="tag">POWERED BY FOUNDRY LOCAL // OFFLINE</div></div>
     <span class="status-label" id="statusLabel">HAZIR</span>
   </header>
 
   <div class="upload-tray">
-    <span class="eyebrow">Doküman Ekle (.md / .pdf)</span>
+    <span class="eyebrow">Add Document (.md / .pdf)</span>
     <input type="file" id="fileInput" accept=".md,.pdf" />
-    <button id="uploadBtn" type="button">Yükle ve İndeksle</button>
+    <button id="uploadBtn" type="button">Upload & Index</button>
     <div id="uploadStatus"></div>
   </div>
 
   <div id="chat">
     <div class="empty-state" id="emptyState">
-      <div class="big">Bir soru sorarak başla</div>
+      <div class="big">Start by asking a question</div>
       <div class="suggestions">
-        <span class="suggestion-chip">Vana bakımı ne sıklıkla yapılmalı?</span>
-        <span class="suggestion-chip">Acil durumda hangi adımları izlemeliyim?</span>
-        <span class="suggestion-chip">Basınç 80 bar üzerine çıkarsa ne yapmalıyım?</span>
+        <span class="suggestion-chip">Kahve makinesi ne sıklıkla temizlenmeli?</span>
+        <span class="suggestion-chip">Arz ve talep kanunu nedir?</span>
+        <span class="suggestion-chip">When was the Colosseum built?</span>
       </div>
     </div>
   </div>
 
   <form id="form">
-    <input id="input" placeholder="Bir soru sor…" autocomplete="off" />
-    <button type="submit">Gönder</button>
+    <input id="input" placeholder="Ask a question…" autocomplete="off" />
+    <button type="submit">Send</button>
   </form>
 </div>
 
@@ -144,8 +144,8 @@
 
   function setStatus(state) {
     led.className = "led" + (state ? " " + state : "");
-    const labels = { busy: "İŞLENİYOR", ok: "YANITLANDI", warn: "BULUNAMADI" };
-    statusLabel.textContent = labels[state] || "HAZIR";
+    const labels = { busy: "PROCESSING", ok: "ANSWERED", warn: "NOT FOUND" };
+    statusLabel.textContent = labels[state] || "READY";
   }
 
   uploadBtn.addEventListener("click", async () => {
@@ -248,7 +248,7 @@
 
     const roleLabel = document.createElement("span");
     roleLabel.className = "role";
-    roleLabel.textContent = role === "user" ? "Sen" : "Asistan";
+    roleLabel.textContent = role === "user" ? "You" : "Assistant";
     entryBody.appendChild(roleLabel);
 
     const bodyEl = document.createElement("div");

@@ -1,4 +1,4 @@
-# 🛠️ Saha Destek Asistanı — Offline RAG Sistemi
+# 🧠 Lucid — Offline Document Assistant
 
 Foundry Local ile tamamen **çevrimdışı** (internet gerektirmeden) çalışan, saha personeli için güvenlik ve bakım prosedürlerini yanıtlayan bir RAG (Retrieval-Augmented Generation) uygulaması. Microsoft'un ["Building Your First Local RAG Application with Foundry Local"](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/building-your-first-local-rag-application-with-foundry-local/4501968) makalesinden yola çıkılarak, hybrid retrieval, LLM reranking, otomatik test paketi ve CI pipeline ile production seviyesine genişletilmiştir.
 
@@ -113,6 +113,7 @@ Sistem, 30 soruluk bir golden test setinde **%86.2 doğruluk** (retrieval %89.7,
 - **Belirsiz alt-sorular**: Dokümanın genel bir kuralı olup, o kuralın bir alt-parçasına özel soru sorulduğunda (örn. "filtre temizliği ne sıklıkla" — doküman sadece genel denetim sıklığı veriyor), sistem bazen dürüstçe "bilgi bulamadım" der.
 - **Tek kullanıcılı, yerel kullanım için tasarlandı** — çoklu eşzamanlı kullanıcı/production ölçekleme için ek altyapı (queue, rate limiting) gerekir.
 - Windows 11 + Node 22.23.1 LTS üzerinde geliştirildi ve test edildi.
+- **Dil desteği**: Sistem Türkçe, İngilizce, Almanca gibi yaygın dillerde güvenilir çalışır. Az kullanılan dillerde (örn. Korece, Japonca) model soruyu anlasa bile cevabı varsayılan dile (genelde Türkçe/İngilizce) dönebilir — bu, modelin çok dillilik kapasitesinin doğal bir sınırıdır.
 
 Detaylı eval sonuçları `src/eval/results/` altında saklanır.
 
